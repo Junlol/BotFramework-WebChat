@@ -23,6 +23,7 @@ import svSE from './sv-SE';
 import trTR from './tr-TR';
 import zhHANS from './zh-HANS';
 import zhHANT from './zh-HANT';
+import zhHANT_TW from './zh-HANT-TW';
 import zhYUE from './zh-YUE';
 
 function getStrings(language) {
@@ -49,6 +50,7 @@ function getStrings(language) {
     case 'tr-TR': return trTR;
     case 'zh-HANS': return zhHANS;
     case 'zh-HANT': return zhHANT;
+    case 'zh-HANT-TW': return zhHANT_TW;
     case 'zh-YUE': return zhYUE;
 
     default:
@@ -124,11 +126,12 @@ function normalizeLanguage(language) {
   } else if (language.startsWith('zh')) {
     if (language === 'zh-yue') {
       return 'zh-YUE';
+    } else if (language === 'zh-tw') {
+      return 'zh-HANT-TW';
     } else if (
       language === 'zh-hant'
       || language === 'zh-hk'
       || language === 'zh-mo'
-      || language === 'zh-tw'
     ) {
       return 'zh-HANT';
     } else {

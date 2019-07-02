@@ -1,9 +1,6 @@
 import createActivitiesStyle from './StyleSet/Activities';
 import createActivityStyle from './StyleSet/Activity';
-import createAdaptiveCardRendererStyle from './StyleSet/AdaptiveCardRenderer';
-import createAnimationCardAttachmentStyle from './StyleSet/AnimationCardAttachment';
 import createAudioAttachmentStyle from './StyleSet/AudioAttachment';
-import createAudioCardAttachmentStyle from './StyleSet/AudioCardAttachment';
 import createAudioContentStyle from './StyleSet/AudioContent';
 import createAvatarStyle from './StyleSet/Avatar';
 import createBubbleStyle from './StyleSet/Bubble';
@@ -19,7 +16,7 @@ import createRootStyle from './StyleSet/Root';
 import createScrollToEndButtonStyle from './StyleSet/ScrollToEndButton';
 import createSendBoxButtonStyle from './StyleSet/SendBoxButton';
 import createSendBoxStyle from './StyleSet/SendBox';
-import createSendBoxTextareaStyle from './StyleSet/SendBoxTextarea';
+import createSendBoxTextAreaStyle from './StyleSet/SendBoxTextArea';
 import createSendBoxTextBoxStyle from './StyleSet/SendBoxTextBox';
 import createSendStatusStyle from './StyleSet/SendStatus';
 import createSingleAttachmentActivityStyle from './StyleSet/SingleAttachmentActivity';
@@ -39,20 +36,21 @@ import createVimeoContentStyle from './StyleSet/VimeoContent';
 import createWarningNotificationStyle from './StyleSet/WarningNotification';
 import createYouTubeContentStyle from './StyleSet/YouTubeContent';
 
-import defaultStyleSetOptions from './defaultStyleSetOptions';
+import defaultStyleOptions from './defaultStyleOptions';
+
+// TODO: [P4] We should add a notice for people who want to use "styleSet" instead of "styleOptions".
+//       "styleSet" is actually CSS stylesheet and it is based on the DOM tree.
+//       DOM tree may change from time to time, thus, maintaining "styleSet" becomes a constant effort.
 
 export default function createStyleSet(options) {
-  options = { ...defaultStyleSetOptions, ...options };
+  options = { ...defaultStyleOptions, ...options };
 
   // Keep this list flat (no nested style) and serializable (no functions)
 
   return {
     activities: createActivitiesStyle(options),
     activity: createActivityStyle(options),
-    adaptiveCardRenderer: createAdaptiveCardRendererStyle(options),
-    animationCardAttachment: createAnimationCardAttachmentStyle(options),
     audioAttachment: createAudioAttachmentStyle(options),
-    audioCardAttachment: createAudioCardAttachmentStyle(options),
     audioContent: createAudioContentStyle(options),
     avatar: createAvatarStyle(options),
     bubble: createBubbleStyle(options),
@@ -72,7 +70,7 @@ export default function createStyleSet(options) {
     scrollToEndButton: createScrollToEndButtonStyle(options),
     sendBox: createSendBoxStyle(options),
     sendBoxButton: createSendBoxButtonStyle(options),
-    sendBoxTextarea: createSendBoxTextareaStyle(options),
+    sendBoxTextArea: createSendBoxTextAreaStyle(options),
     sendBoxTextBox: createSendBoxTextBoxStyle(options),
     sendStatus: createSendStatusStyle(options),
     singleAttachmentActivity: createSingleAttachmentActivityStyle(options),

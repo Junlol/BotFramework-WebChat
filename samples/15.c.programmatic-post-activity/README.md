@@ -4,11 +4,11 @@ When the 'Help' button is clicked, an activity will be sent programmatically to 
 
 # Test out the hosted sample
 
-- [Try out MockBot](https://microsoft.github.io/BotFramework-WebChat/15.c.programmatic-post-activity)
+-  [Try out MockBot](https://microsoft.github.io/BotFramework-WebChat/15.c.programmatic-post-activity)
 
 # Things to try out
 
-- Click the "Help" button on upper-left hand corner
+-  Click the "Help" button on upper-left hand corner
 
 # Code
 
@@ -47,6 +47,7 @@ Finally, let's connect the button to Web Chat by adding an event listener and di
 ```
 
 ## Completed Code
+
 Here is the finished `index.html`:
 
 ```diff
@@ -55,11 +56,10 @@ Here is the finished `index.html`:
   <head>
     <title>Web Chat: Programmatic access to post activity</title>
     <!--
-      For demonstration purposes, we are using the development branch of Web Chat at "/master/webchat.js".
-      When you are using Web Chat for production, you should use the latest stable release at "/latest/webchat.js",
-      or lock down on a specific version with the following format: "/4.1.0/webchat.js".
+      This CDN points to the latest official release of Web Chat. If you need to test against Web Chat's latest bits, please refer to pointing to Web Chat's MyGet feed:
+      https://github.com/microsoft/BotFramework-WebChat#how-to-test-with-web-chats-latest-bits
     -->
-    <script src="https://cdn.botframework.com/botframework-webchat/master/webchat.js"></script>
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
     <style>
       html, body { height: 100% }
       body { margin: 0 }

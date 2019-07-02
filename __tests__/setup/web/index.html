@@ -35,9 +35,7 @@
     }();
     </script>
     <!--
-      For demonstration purposes, we are using development branch of Web Chat at "/master/webchat.js".
-      When you are using Web Chat for production, you should use the latest stable at "/latest/webchat.js".
-      Or locked down on a specific version "/4.1.0/webchat.js".
+      For demonstration purposes, we are using the latest official release of Web Chat at "/latest/webchat.js". When you are using Web Chat for production, you may lock down on a specific version with the following format: "/4.1.0/webchat.js".
     -->
     <style>
       html, body { height: 100% }
@@ -53,8 +51,6 @@
   <body>
     <div id="webchat" role="main"></div>
     <script>
-      window.WebChatTest = { actions: [] };
-
       function unmarshal({ __evalKeys, ...obj } = {}) {
         __evalKeys && __evalKeys.forEach(key => {
           obj[key] = eval(obj[key])();
@@ -67,7 +63,8 @@
         return new Promise((resolve, reject) => {
           const script = document.createElement('script');
 
-          script.setAttribute('src', '/webchat-instrumented.js');
+          script.setAttribute('async', '');
+          script.setAttribute('src', src);
           script.addEventListener('load', resolve);
           script.addEventListener('error', ({ error }) => reject(error));
 
@@ -89,8 +86,10 @@
         throw lastErr;
       }
 
+      const PASSTHRU_MIDDLEWARE = store => next => action => next(action);
+
       async function main(options) {
-        let { createDirectLine, props, setup } = unmarshal(options);
+        let { createDirectLine, createStyleSet, props, setup, storeMiddleware = PASSTHRU_MIDDLEWARE } = unmarshal(options);
 
         props = unmarshal(props);
 
@@ -111,10 +110,18 @@
           }
         }, 3);
 
-        const store = window.WebChatTest.store = window.WebChat.createStore({}, () => next => action => {
-          window.WebChatTest.actions.push(action);
+        const store = window.WebChatTest.store = window.WebChat.createStore({}, store => {
+          const setupMiddleware = storeMiddleware(store);
 
-          return next(action);
+          return next => {
+            const processAction = setupMiddleware(next);
+
+            return action => {
+              window.WebChatTest.actions.push(action);
+
+              return processAction(action);
+            };
+          };
         });
 
         createDirectLine || (createDirectLine = window.WebChat.createDirectLine);
@@ -122,12 +129,18 @@
         window.WebChat.renderWebChat({
           directLine: createDirectLine({ token }),
           store,
+          styleSet: createStyleSet && createStyleSet(props.styleOptions),
           username: 'Happy Web Chat user',
           ...props
         }, document.getElementById('webchat'));
 
         document.querySelector('#webchat > *').focus();
       }
+
+      window.WebChatTest = {
+        actions: [],
+        loadScript
+      };
     </script>
   </body>
 </html>

@@ -10,8 +10,8 @@ A simple web page with a WebChat in a flex-box maximized sidebar hosted using An
 
 # How to run locally
 
-- Fork the [repository containing the sample code.](https://github.com/omarsourour/ng-webchat-example)
-- Follow the README.md in the forked repo.
+-  Fork the [repository containing the sample code.](https://github.com/omarsourour/ng-webchat-example)
+-  Follow the README.md in the forked repo.
 
 # Code
 
@@ -21,10 +21,10 @@ A simple web page with a WebChat in a flex-box maximized sidebar hosted using An
 
 The sample repo has three main goals
 
-- Import WebChat into our Angular application.
-  - The manner in which the library is imported differs between Angular versions. Check the `CHANGELOG.md` file in the [sample repo](https://github.com/omarsourour/ng-webchat-example) for more information.
-- Create a WebChat container in a component template file.
-- Attach template container to a directline instance.
+-  Import WebChat into our Angular application.
+   -  The manner in which the library is imported differs between Angular versions. Check the `CHANGELOG.md` file in the [sample repo](https://github.com/omarsourour/ng-webchat-example) for more information.
+-  Create a WebChat container in a component template file.
+-  Attach template container to a directline instance.
 
 We'll start by adding the CDN to the head of our Angular application's `index.html` template.
 
@@ -33,12 +33,12 @@ We'll start by adding the CDN to the head of our Angular application's `index.ht
 ```diff
 …
 <head>
-+  <script src="https://cdn.botframework.com/botframework-webchat/master/webchat.js"></script>
++  <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
 </head>
 …
 ```
 
-> For demonstration purposes, we are using the development branch of Web Chat at "/master/webchat.js". When you are using Web Chat for production, you should use the latest stable release at "/latest/webchat.js", or lock down on a specific version with the following format: "/4.1.0/webchat.js".
+> This CDN points to the latest official release of Web Chat. If you need to test against Web Chat's latest bits, please refer to pointing to Web Chat's MyGet feed. https://github.com/microsoft/BotFramework-WebChat#how-to-test-with-web-chats-latest-bits
 
 To create a WebChat container, create an empty `div` in the component's template file and assign it a template variable to reference it from this component's `.ts` file.
 

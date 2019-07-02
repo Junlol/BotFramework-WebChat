@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { localize } from '../Localization/Localize';
@@ -6,6 +6,8 @@ import connectToWebChat from '../connectToWebChat';
 import ErrorNotificationIcon from '../Attachment/Assets/ErrorNotificationIcon';
 import SpinnerAnimation from '../Attachment/Assets/SpinnerAnimation';
 import WarningNotificationIcon from '../Attachment/Assets/WarningNotificationIcon';
+
+const CONNECTIVITY_STATUS_DEBOUNCE = 400;
 
 class DebouncedConnectivityStatus extends React.Component {
   constructor(props) {
@@ -18,20 +20,19 @@ class DebouncedConnectivityStatus extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { children, interval } = nextProps;
+    const { children, interval } = this.props;
+    const { children: nextChildren, interval: nextInterval } = nextProps;
+    const { since } = this.state;
 
-    if (
-      children !== this.props.children
-      || interval !== this.props.interval
-    ) {
+    if (nextChildren !== children || nextInterval !== interval) {
       clearTimeout(this.timeout);
 
       this.timeout = setTimeout(() => {
         this.setState(() => ({
-          children,
+          children: nextChildren,
           since: Date.now()
         }));
-      }, Math.max(0, interval - Date.now() + this.state.since));
+      }, Math.max(0, nextInterval - Date.now() + since));
     }
   }
 
@@ -40,61 +41,73 @@ class DebouncedConnectivityStatus extends React.Component {
   }
 
   render() {
-    return typeof this.state.children === 'function' ? this.state.children() : false;
+    const { children } = this.state;
+
+    return typeof children === 'function' ? children() : false;
   }
 }
 
-const connectConnectivityStatus = (...selectors) => connectToWebChat(
-  ({ connectivityStatus, language }) => ({ connectivityStatus, language }),
-  ...selectors
-)
+DebouncedConnectivityStatus.defaultProps = {
+  children: undefined
+};
 
-export default connectConnectivityStatus(
-  ({ styleSet }) => ({ styleSet })
-)(
-  ({ connectivityStatus, language, styleSet }) =>
-    <div
-      aria-live="polite"
-      className={
-        classNames({
-          [styleSet.errorNotification]:
-            connectivityStatus === 'error'
-            || connectivityStatus === 'notconnected',
-          [styleSet.warningNotification]:
-            connectivityStatus === 'connectingslow',
-          [styleSet.connectivityNotification]:
-            connectivityStatus === 'uninitialized'
-            || connectivityStatus === 'connected'
-            || connectivityStatus === 'reconnected'
-            || connectivityStatus === 'reconnecting'
-        })
+DebouncedConnectivityStatus.propTypes = {
+  children: PropTypes.any,
+  interval: PropTypes.number.isRequired
+};
+
+const connectConnectivityStatus = (...selectors) =>
+  connectToWebChat(({ connectivityStatus, language }) => ({ connectivityStatus, language }), ...selectors);
+
+const ConnectivityStatus = ({ connectivityStatus, language, styleSet }) => (
+  <div aria-live="polite" role="status">
+    <DebouncedConnectivityStatus
+      interval={
+        connectivityStatus === 'uninitialized' || connectivityStatus === 'error' ? 0 : CONNECTIVITY_STATUS_DEBOUNCE
       }
-      role="status"
     >
-      <DebouncedConnectivityStatus
-        interval={ (connectivityStatus === 'uninitialized' || connectivityStatus === 'error') ? 0 : 400 }>
-        { () =>
-          connectivityStatus === 'connectingslow' ?
-            <React.Fragment>
-              <WarningNotificationIcon />
-              { localize('SLOW_CONNECTION_NOTIFICATION', language) }
-            </React.Fragment>
-          : (connectivityStatus === 'error' || connectivityStatus === 'notconnected') ?
-            <React.Fragment>
-              <ErrorNotificationIcon />
-              { localize('FAILED_CONNECTION_NOTIFICATION', language) }
-            </React.Fragment>
-          : connectivityStatus === 'uninitialized' ?
-            <React.Fragment>
-              <SpinnerAnimation />
-              { localize('INITIAL_CONNECTION_NOTIFICATION', language) }
-            </React.Fragment>
-          : connectivityStatus === 'reconnecting' &&
-            <React.Fragment>
-              <SpinnerAnimation />
-              { localize('INTERRUPTED_CONNECTION_NOTIFICATION', language) }
-            </React.Fragment>
-        }
-      </DebouncedConnectivityStatus>
-    </div>
-  )
+      {() =>
+        connectivityStatus === 'connectingslow' ? (
+          <div className={styleSet.warningNotification}>
+            <WarningNotificationIcon />
+            {localize('SLOW_CONNECTION_NOTIFICATION', language)}
+          </div>
+        ) : connectivityStatus === 'error' || connectivityStatus === 'notconnected' ? (
+          <div className={styleSet.errorNotification}>
+            <ErrorNotificationIcon />
+            {localize('FAILED_CONNECTION_NOTIFICATION', language)}
+          </div>
+        ) : connectivityStatus === 'uninitialized' ? (
+          <div className={styleSet.connectivityNotification}>
+            <SpinnerAnimation />
+            {localize('INITIAL_CONNECTION_NOTIFICATION', language)}
+          </div>
+        ) : connectivityStatus === 'reconnecting' ? (
+          <div className={styleSet.connectivityNotification}>
+            <SpinnerAnimation />
+            {localize('INTERRUPTED_CONNECTION_NOTIFICATION', language)}
+          </div>
+        ) : connectivityStatus === 'sagaerror' ? (
+          <div className={styleSet.errorNotification}>
+            <ErrorNotificationIcon />
+            {localize('RENDER_ERROR_NOTIFICATION', language)}
+          </div>
+        ) : (
+          connectivityStatus === 'reconnected' || (connectivityStatus === 'connected' && false)
+        )
+      }
+    </DebouncedConnectivityStatus>
+  </div>
+);
+
+ConnectivityStatus.propTypes = {
+  connectivityStatus: PropTypes.string.isRequired,
+  language: PropTypes.string.isRequired,
+  styleSet: PropTypes.shape({
+    connectivityNotification: PropTypes.any.isRequired,
+    errorNotification: PropTypes.any.isRequired,
+    warningNotification: PropTypes.any.isRequired
+  }).isRequired
+};
+
+export default connectConnectivityStatus(({ styleSet }) => ({ styleSet }))(ConnectivityStatus);

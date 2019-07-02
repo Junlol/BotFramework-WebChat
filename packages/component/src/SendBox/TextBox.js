@@ -1,5 +1,6 @@
 import { css } from 'glamor';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Context as TypeFocusSinkContext } from '../Utils/TypeFocusSink';
@@ -14,106 +15,113 @@ const ROOT_CSS = css({
   }
 });
 
-const connectSendTextBox = (...selectors) => connectToWebChat(
-  ({
-    disabled,
-    language,
-    scrollToEnd,
-    sendBoxValue,
-    setSendBox,
-    submitSendBox
-  }) => ({
-    disabled,
-    language,
-    onChange: ({ target: { value } }) => {
-      setSendBox(value);
-    },
-    onKeyPress: event => {
-      const { key, shiftKey } = event;
+const connectSendTextBox = (...selectors) =>
+  connectToWebChat(
+    ({ disabled, focusSendBox, language, scrollToEnd, sendBoxValue, setSendBox, submitSendBox }) => ({
+      disabled,
+      language,
+      onChange: ({ target: { value } }) => {
+        setSendBox(value);
+      },
+      onKeyPress: event => {
+        const { key, shiftKey } = event;
 
-      if (key === 'Enter' && !shiftKey) {
+        if (key === 'Enter' && !shiftKey) {
+          event.preventDefault();
+
+          if (sendBoxValue) {
+            setSendBox(sendBoxValue.trim());
+            scrollToEnd();
+            submitSendBox();
+            focusSendBox();
+          }
+        }
+      },
+      onSubmit: event => {
         event.preventDefault();
-        if(sendBoxValue) {
-          setSendBox(sendBoxValue.trim());
+
+        // Consider clearing the send box only after we received POST_ACTIVITY_PENDING
+        // E.g. if the connection is bad, sending the message essentially do nothing but just clearing the send box
+
+        if (sendBoxValue) {
           scrollToEnd();
           submitSendBox();
         }
-      }
-    },
-    onSubmit: event => {
-      event.preventDefault();
+      },
+      value: sendBoxValue
+    }),
+    ...selectors
+  );
 
-      // Consider clearing the send box only after we received POST_ACTIVITY_PENDING
-      // E.g. if the connection is bad, sending the message essentially do nothing but just clearing the send box
-
-      if (sendBoxValue) {
-        scrollToEnd();
-        submitSendBox();
-      }
-    },
-    value: sendBoxValue
-  }),
-  ...selectors
-)
-
-export default connectSendTextBox(
-  ({ styleSet }) => ({ styleSet })
-)(({
-  className,
-  disabled,
-  language,
-  onChange,
-  onKeyPress,
-  onSubmit,
-  styleSet,
-  value
-}) => {
+const TextBox = ({ className, disabled, language, onChange, onKeyPress, onSubmit, styleSet, value }) => {
   const typeYourMessageString = localize('Type your message', language);
-  const { options: { sendBoxTextWrap }} = styleSet;
+  const {
+    options: { sendBoxTextWrap }
+  } = styleSet;
 
   return (
     <form
-      className={ classNames(
-        ROOT_CSS + '',
-        styleSet.sendBoxTextarea + '',
-        styleSet.sendBoxTextBox + '',
-        (className || '') + '',
-      ) }
-      onSubmit={ onSubmit }
+      className={classNames(ROOT_CSS + '', styleSet.sendBoxTextArea + '', styleSet.sendBoxTextBox + '', className + '')}
+      onSubmit={onSubmit}
     >
       {
         <TypeFocusSinkContext.Consumer>
-          { ({ sendFocusRef }) =>
-           !sendBoxTextWrap
-            ? <input
-              aria-label={ typeYourMessageString }
-              data-id="webchat-sendbox-input"
-              disabled={ disabled }
-              onChange={ onChange }
-              placeholder={ typeYourMessageString }
-              ref={ sendFocusRef }
-              type="text"
-              value={ value }
-            />
-            : <div>
-                <textarea 
-                  aria-label={ typeYourMessageString }
+          {({ sendFocusRef }) =>
+            !sendBoxTextWrap ? (
+              <input
+                aria-label={typeYourMessageString}
+                data-id="webchat-sendbox-input"
+                disabled={disabled}
+                onChange={onChange}
+                placeholder={typeYourMessageString}
+                ref={sendFocusRef}
+                type="text"
+                value={value}
+              />
+            ) : (
+              <div>
+                <textarea
+                  aria-label={typeYourMessageString}
                   data-id="webchat-sendbox-input"
-                  disabled={ disabled }
-                  onChange={ onChange }
-                  onKeyPress= { onKeyPress }
-                  placeholder={ typeYourMessageString }
-                  ref={ sendFocusRef }
+                  disabled={disabled}
+                  onChange={onChange}
+                  onKeyPress={onKeyPress}
+                  placeholder={typeYourMessageString}
+                  ref={sendFocusRef}
                   rows="1"
-                  value={ value }
+                  value={value}
                 />
-                <div>{ value + '\n' }</div>
+                <div>{value + '\n'}</div>
               </div>
+            )
           }
         </TypeFocusSinkContext.Consumer>
       }
     </form>
   );
-})
+};
 
-export { connectSendTextBox }
+TextBox.defaultProps = {
+  className: '',
+  disabled: false,
+  value: ''
+};
+
+TextBox.propTypes = {
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  language: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onKeyPress: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  styleSet: PropTypes.shape({
+    options: PropTypes.shape({
+      sendBoxTextWrap: PropTypes.bool.isRequired
+    }).isRequired
+  }).isRequired,
+  value: PropTypes.string
+};
+
+export default connectSendTextBox(({ styleSet }) => ({ styleSet }))(TextBox);
+
+export { connectSendTextBox };

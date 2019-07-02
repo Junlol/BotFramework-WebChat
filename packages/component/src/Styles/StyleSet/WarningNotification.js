@@ -1,15 +1,16 @@
-export default function ({
+export default function createWarningNotificationStyle({
   connectivityIconPadding,
   connectivityMarginLeftRight,
   connectivityMarginTopBottom,
   connectivityTextSize,
   primaryFont,
   slowConnectivity,
-  notificationText,
+  notificationText
 }) {
   return {
     alignItems: 'center',
     color: notificationText,
+    // TODO: [P2] We should not set "display" in styleSet, this will allow the user to break the layout for no good reasons.
     display: 'flex',
     fontFamily: primaryFont,
     fontSize: connectivityTextSize,
@@ -20,7 +21,7 @@ export default function ({
 
     '& > svg': {
       fill: slowConnectivity,
-      paddingRight: connectivityIconPadding,
+      paddingRight: connectivityIconPadding
     }
   };
 }

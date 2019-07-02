@@ -11,18 +11,19 @@ If you haven't viewed it already, review and understanding of sample 11, which t
 
 # Test out the hosted sample
 
-- [Try out MockBot](https://microsoft.github.io/BotFramework-WebChat/15.a.backchannel-piggyback-on-outgoing-activities)
+-  [Try out MockBot](https://microsoft.github.io/BotFramework-WebChat/15.a.backchannel-piggyback-on-outgoing-activities)
 
 # How to run locally
 
-- Fork this repository
-- Navigate to `/Your-Local-WebChat/samples/15.a.backchannel-piggyback-on-outgoing-activities` in command line
-- Run `npx serve` in the full-bundle directory
-- Browse to [http://localhost:5000/](http://localhost:5000/)
+-  Fork this repository
+-  Navigate to `/Your-Local-WebChat/samples/15.a.backchannel-piggyback-on-outgoing-activities` in command line
+-  Run `npx serve` in the full-bundle directory
+-  Browse to [http://localhost:5000/](http://localhost:5000/)
 
 # Things to try out
-- Type `channel-data`
-   - This command will dump the channel data property bag received on the bot side
+
+-  Type `channel-data`
+   -  This command will dump the channel data property bag received on the bot side
 
 # Code
 
@@ -36,7 +37,7 @@ In this sample, we will be using the package `simple-update-in` to update our im
 …
 <head>
   <title>Web Chat: Inject data on post activity</title>
-  <script src="https://cdn.botframework.com/botframework-webchat/master/webchat.js"></script>
+  <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
 + <script src="https://unpkg.com/simple-update-in/dist/simple-update-in.production.min.js"></script>
 …
 ```
@@ -61,6 +62,7 @@ const store = window.WebChat.createStore(
 All 'DIRECT_LINE/POST_ACTIVITY' sent on this bot will now have an email added to the channel data.
 
 ## Completed Code
+
 Here is the finished `index.html`:
 
 ```diff
@@ -69,7 +71,7 @@ Here is the finished `index.html`:
   <head>
     <title>Web Chat: Inject data on post activity</title>
 
-    <script src="https://cdn.botframework.com/botframework-webchat/master/webchat.js"></script>
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
 
     <script src="https://unpkg.com/simple-update-in/dist/simple-update-in.production.min.js"></script>
     <style>
@@ -122,7 +124,7 @@ Here is the finished `index.html`:
 
 # Further reading
 
-- [simple-update-in](https://www.npmjs.com/package/simple-update-in) on npmjs
+-  [simple-update-in](https://www.npmjs.com/package/simple-update-in) on npmjs
 
 [Customization of Redux Actions bot](https://microsoft.github.io/BotFramework-WebChat/11.customization-redux-actions) | [Customization of Redux Actions source code](./../11.customization-redux-actions)
 
